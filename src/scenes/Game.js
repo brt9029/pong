@@ -1,20 +1,32 @@
-export default class Game extends Phaser.Scene
+import Phaser from 'phaser';
+import WebFontFile from './WebFontFile';
+
+class Game extends Phaser.Scene
 {
-    paddleRightVelocity = new Phaser.Math.Vector2(0, 0);
+    init()
+    {
+        this.paddleRightVelocity = new Phaser.Math.Vector2(0, 0);
+        this.leftScore = 0;
+        this.rightScore = 0;
+    }
 
     preload()
     {
-
+        const fonts = new WebFontFile(this.load, 'Press Start 2P');
+        this.load.addFile(fonts);
     }
 
     create()
     {
+        this.physics.world.setBounds(-100, 0, 1000, 500);
+
         this.ball = this.add.circle(400, 250, 10, 0xffffff, 1);
         this.physics.add.existing(this.ball);
         this.ball.body.setBounce(1, 1);
 
         this.ball.body.setCollideWorldBounds(true, 1, 1);
-        this.ball.body.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+
+        this.resetBall();
 
         this.paddleLeft = this.add.rectangle(50, 250, 10, 100, 0xffffff, 1);
         this.physics.add.existing(this.paddleLeft, true);
@@ -25,6 +37,14 @@ export default class Game extends Phaser.Scene
         this.physics.add.collider(this.paddleLeft, this.ball);
         this.physics.add.collider(this.paddleRight, this.ball);
 
+        const scoreStyle = { fontSize: 48, fontFamily: '"Press Start 2P"' }
+        
+        this.leftScoreLabel = this.add.text(300, 50, '0', scoreStyle)
+            .setOrigin(0.5, 0.5);
+
+        this.rightScoreLabel = this.add.text(500, 50, '0', scoreStyle)
+            .setOrigin(0.5, 0.5);
+        
         this.cursors = this.input.keyboard.createCursorKeys();
     }
 
@@ -73,5 +93,42 @@ export default class Game extends Phaser.Scene
 
         paddleRight.y += this.paddleRightVelocity.y;
         paddleRight.body.updateFromGameObject();
+
+        if (this.ball.x < -30)
+        {
+            // scored on the left side
+            this.resetBall();
+            this.incrementLeftScore();
+        }
+        else if (this.ball.x > 830)
+        {
+            // scored on the right side
+            this.resetBall();
+            this.incrementRightScore();
+        }
+    }
+
+    incrementLeftScore()
+    {
+        this.leftScore++;
+        this.leftScoreLabel.text = this.leftScore;
+    }
+
+    incrementRightScore()
+    {
+        this.rightScore++;
+        this.rightScoreLabel.text = this.rightScore;
+    }
+
+    resetBall()
+    {
+        this.ball.setPosition(400, 250);
+        
+        const angle = Phaser.Math.Between(0, 360);
+        const vector = this.physics.velocityFromAngle(angle, 200);
+
+        this.ball.body.setVelocity(vector.x, vector.y);
     }
 }
+
+export default Game;

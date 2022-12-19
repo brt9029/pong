@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import WebFontFile from './WebFontFile';
+import { GameBackground } from '../utils/SceneKeys';
 
 class Game extends Phaser.Scene
 {
@@ -18,6 +19,9 @@ class Game extends Phaser.Scene
 
     create()
     {
+        this.scene.run(GameBackground);
+        this.scene.sendToBack(GameBackground);
+
         this.physics.world.setBounds(-100, 0, 1000, 500);
 
         this.ball = this.add.circle(400, 250, 10, 0xffffff, 1);
@@ -28,10 +32,10 @@ class Game extends Phaser.Scene
 
         this.resetBall();
 
-        this.paddleLeft = this.add.rectangle(50, 250, 10, 100, 0xffffff, 1);
+        this.paddleLeft = this.add.rectangle(50, 250, 15, 100, 0xffffff, 1);
         this.physics.add.existing(this.paddleLeft, true);
 
-        this.paddleRight = this.add.rectangle(750, 250, 10, 100, 0xffffff, 1);
+        this.paddleRight = this.add.rectangle(750, 250, 15, 100, 0xffffff, 1);
         this.physics.add.existing(this.paddleRight, true);
 
         this.physics.add.collider(this.paddleLeft, this.ball);
@@ -50,6 +54,13 @@ class Game extends Phaser.Scene
 
     update()
     {
+        this.playerControl();
+        this.updateAi();
+        this.checkScore();
+    }
+
+    playerControl()
+    {
         const paddleLeft = this.paddleLeft;
         if (this.cursors.up.isDown)
         {
@@ -61,7 +72,26 @@ class Game extends Phaser.Scene
             paddleLeft.y += 6;
             paddleLeft.body.updateFromGameObject();
         }
+    }
 
+    checkScore()
+    {
+        if (this.ball.x < -30)
+        {
+            // scored on the left side
+            this.resetBall();
+            this.incrementLeftScore();
+        }
+        else if (this.ball.x > 830)
+        {
+            // scored on the right side
+            this.resetBall();
+            this.incrementRightScore();
+        }
+    }
+
+    updateAi()
+    {
         const paddleRight = this.paddleRight;
         const diff = this.ball.y - this.paddleRight.y;
 
@@ -93,19 +123,6 @@ class Game extends Phaser.Scene
 
         paddleRight.y += this.paddleRightVelocity.y;
         paddleRight.body.updateFromGameObject();
-
-        if (this.ball.x < -30)
-        {
-            // scored on the left side
-            this.resetBall();
-            this.incrementLeftScore();
-        }
-        else if (this.ball.x > 830)
-        {
-            // scored on the right side
-            this.resetBall();
-            this.incrementRightScore();
-        }
     }
 
     incrementLeftScore()

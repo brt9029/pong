@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-export default class TitleScreen extends Phaser.Scene
+class TitleScreen extends Phaser.Scene
 {
     preload()
     {
@@ -13,3 +13,5 @@ export default class TitleScreen extends Phaser.Scene
         text.setOrigin(0.5, 0.5);
     }
 }
+
+export default TitleScreen;

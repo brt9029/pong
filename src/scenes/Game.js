@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GameBackground, GameOver } from '../utils/SceneKeys';
+import * as AudioKeys from '../utils/AudioKeys';
 
 const GameState = {
     Running: 'running',
@@ -40,8 +41,8 @@ class Game extends Phaser.Scene
         this.paddleRight = this.add.rectangle(750, 250, 15, 100, 0xffffff, 1);
         this.physics.add.existing(this.paddleRight, true);
 
-        this.physics.add.collider(this.paddleLeft, this.ball);
-        this.physics.add.collider(this.paddleRight, this.ball);
+        this.physics.add.collider(this.paddleLeft, this.ball, this.handlePaddleBallCollision, undefined, this);
+        this.physics.add.collider(this.paddleRight, this.ball, this.handlePaddleBallCollision, undefined, this);
 
         const scoreStyle = { fontSize: 48, fontFamily: '"Press Start 2P"' }
         
@@ -68,6 +69,11 @@ class Game extends Phaser.Scene
         this.playerControl();
         this.updateAi();
         this.checkScore();
+    }
+
+    handlePaddleBallCollision(paddle, ball)
+    {
+        this.sound.play(AudioKeys.PongBeep);
     }
 
     playerControl()

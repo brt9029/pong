@@ -26,11 +26,10 @@ class Game extends Phaser.Scene
 
         this.ball = this.add.circle(400, 250, 10, 0xffffff, 1);
         this.physics.add.existing(this.ball);
+        this.ball.body.setCircle(10);
         this.ball.body.setBounce(1, 1);
 
         this.ball.body.setCollideWorldBounds(true, 1, 1);
-
-        this.resetBall();
 
         this.paddleLeft = this.add.rectangle(50, 250, 15, 100, 0xffffff, 1);
         this.physics.add.existing(this.paddleLeft, true);
@@ -50,6 +49,10 @@ class Game extends Phaser.Scene
             .setOrigin(0.5, 0.5);
         
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        this.time.delayedCall(500, () => {
+            this.resetBall();
+        });
     }
 
     update()

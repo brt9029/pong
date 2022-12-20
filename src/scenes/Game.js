@@ -1,20 +1,23 @@
 import Phaser from 'phaser';
-import WebFontFile from './WebFontFile';
-import { GameBackground } from '../utils/SceneKeys';
+import { GameBackground, GameOver } from '../utils/SceneKeys';
+
+const GameState = {
+    Running: 'running',
+    PlayserWon: 'player-won',
+    AiWon: 'ai-won'
+}
 
 class Game extends Phaser.Scene
 {
     init()
     {
+        this.gameState = GameState.Running;
+
         this.paddleRightVelocity = new Phaser.Math.Vector2(0, 0);
         this.leftScore = 0;
         this.rightScore = 0;
-    }
 
-    preload()
-    {
-        const fonts = new WebFontFile(this.load, 'Press Start 2P');
-        this.load.addFile(fonts);
+        this.paused = false;
     }
 
     create()
@@ -57,6 +60,11 @@ class Game extends Phaser.Scene
 
     update()
     {
+        if (this.paused || this.gameState !== GameState.Running)
+        {
+            return;
+        }
+
         this.playerControl();
         this.updateAi();
         this.checkScore();
@@ -79,17 +87,51 @@ class Game extends Phaser.Scene
 
     checkScore()
     {
-        if (this.ball.x < -30)
+        const x = this.ball.x;
+        const leftBounds = -30;
+        const rightBounds = 830;
+        const endScore = 3;
+
+        if (x >= leftBounds && x <= rightBounds)
+        {
+            return
+        }
+        
+        if (this.ball.x < leftBounds)
         {
             // scored on the left side
-            this.resetBall();
-            this.incrementLeftScore();
+            this.incrementRightScore();
         }
-        else if (this.ball.x > 830)
+        else if (this.ball.x > rightBounds)
         {
             // scored on the right side
+            this.incrementLeftScore();
+        }
+
+        if (this.leftScore >= endScore)
+        {
+            this.gameState = GameState.PlayserWon;
+        }
+        else if (this.rightScore >= endScore)
+        {
+            this.gameState = GameState.AiWon;
+        }
+
+        if (this.gameState === GameState.Running)
+        {
             this.resetBall();
-            this.incrementRightScore();
+        }
+        else
+        {
+            this.physics.world.remove(this.ball.body);
+
+            this.scene.stop(GameBackground);
+
+            // pass data onto gameover screen
+            this.scene.start(GameOver, { 
+                leftScore: this.leftScore,
+                rightScore: this.rightScore
+            });
         }
     }
 

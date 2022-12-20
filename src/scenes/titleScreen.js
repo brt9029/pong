@@ -9,14 +9,13 @@ class TitleScreen extends Phaser.Scene
         const fonts = new WebFontFile(this.load, 'Press Start 2P');
         this.load.addFile(fonts);
     }
-
     create()
     {
-        const title = this.add.text(400, 200, "Pong!", {
+        this.add.text(400, 200, "Pong!", {
             fontSize: 50,
             fontFamily: '"Press Start 2P"'
-        });
-        title.setOrigin(0.5, 0.5);
+        })
+        .setOrigin(0.5, 0.5);
 
         this.add.text(400, 300, 'Press Space to Start', {
             fontFamily: '"Press Start 2P"'

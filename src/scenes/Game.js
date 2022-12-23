@@ -32,8 +32,10 @@ class Game extends Phaser.Scene
         this.physics.add.existing(this.ball);
         this.ball.body.setCircle(10);
         this.ball.body.setBounce(1, 1);
+        this.ball.body.setMaxSpeed(400);
 
         this.ball.body.setCollideWorldBounds(true, 1, 1);
+        this.ball.body.onWorldBounds = true;
 
         this.paddleLeft = this.add.rectangle(50, 250, 15, 100, 0xffffff, 1);
         this.physics.add.existing(this.paddleLeft, true);
@@ -43,6 +45,8 @@ class Game extends Phaser.Scene
 
         this.physics.add.collider(this.paddleLeft, this.ball, this.handlePaddleBallCollision, undefined, this);
         this.physics.add.collider(this.paddleRight, this.ball, this.handlePaddleBallCollision, undefined, this);
+
+        this.physics.world.addListener('worldbounds', this.handleBallWorldBoundsCollision, this);
 
         const scoreStyle = { fontSize: 48, fontFamily: '"Press Start 2P"' }
         
@@ -71,9 +75,26 @@ class Game extends Phaser.Scene
         this.checkScore();
     }
 
+    handleBallWorldBoundsCollision(body, up, down, left, right)
+    {
+        if (left || right)
+        {
+            return;
+        }
+
+        this.sound.play(AudioKeys.PongPlop);
+    }
+
     handlePaddleBallCollision(paddle, ball)
     {
         this.sound.play(AudioKeys.PongBeep);
+
+        const body = this.ball.body;
+        const vel = body.velocity;
+        vel.x *= 1.05;
+        vel.y *= 1.05;
+
+        body.setVelocity(vel.x, vel.y);
     }
 
     playerControl()
@@ -151,7 +172,7 @@ class Game extends Phaser.Scene
             return
         }
 
-        const aiSpeed = 3;
+        const aiSpeed = 1;
 
         if (diff < 0)
         {
@@ -159,7 +180,7 @@ class Game extends Phaser.Scene
             this.paddleRightVelocity.y = -aiSpeed;
             if (this.paddleRightVelocity.y < -10)
             {
-                this.paddleRightVelocity.y = -10;
+                this.paddleRightVelocity.y = -9;
             }
         }
         else if (diff > 0)
@@ -168,7 +189,7 @@ class Game extends Phaser.Scene
             this.paddleRightVelocity.y = aiSpeed;
             if (this.paddleRightVelocity.y > 10)
             {
-                this.paddleRightVelocity.y = 10;
+                this.paddleRightVelocity.y = 9;
             }
         }
 
@@ -192,7 +213,7 @@ class Game extends Phaser.Scene
     {
         this.ball.setPosition(400, 250);
         
-        const angle = Phaser.Math.Between(0, 360);
+        const angle = Phaser.Math.Between(90, 270);
         const vector = this.physics.velocityFromAngle(angle, 200);
 
         this.ball.body.setVelocity(vector.x, vector.y);

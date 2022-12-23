@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "parcel src/index.html -p 8000",
+    "predeploy": "rm -rf dist && parcel build ./src/index.html --public-url https://brt9029.github.io/pong/",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

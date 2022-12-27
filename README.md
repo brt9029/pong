@@ -13,7 +13,7 @@
 - Move up and down using the arrow keys
 - First side to 3 points ends the game with a winner decided!
 
-![image](https://user-images.githubusercontent.com/26530136/209592457-4adc96f8-ef97-4747-b637-981edc49b70c.png)
+![image](https://user-images.githubusercontent.com/26530136/209592616-9e98d585-6387-4919-a0c8-bdc8560d8060.png)
 
 
 ## Credits

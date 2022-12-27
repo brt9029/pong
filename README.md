@@ -1,6 +1,6 @@
 # Pong
-![GitHub](https://img.shields.io/github/license/brt9029/pong)
 ![GitHub](https://img.shields.io/badge/framework-phaser%203-brightgreen)  
+![GitHub](https://img.shields.io/github/license/brt9029/pong)
 ## Description
 - Pong re-created using the Phaser 3 framework
 - Created with the intent of diving deeper into game development
